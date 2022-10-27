@@ -6,14 +6,9 @@ const crypto = require('crypto');
 
 const server = express();
 
-
 server.use(express.json());
 server.use(express.urlencoded({extended:true}));
 server.use(express.static("public"));
-
-server.get("/", (req,res)=>{
-    res.sendFile(path.join(__dirname, "./public/index.html"));
-})
 
 server.get("/notes", (req,res)=>{
     res.sendFile(path.join(__dirname, "./public/notes.html"));
@@ -22,9 +17,7 @@ server.get("/notes", (req,res)=>{
 server.get("/api/notes", (req,res)=>{
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
-            //todo: real 404 error
-            res.send("404");
-            throw err;
+            return res.status(500).send("error reading database");
         }else{
             const notes = JSON.parse(data);
             res.json(notes);
@@ -37,9 +30,7 @@ server.post("/api/notes", (req,res)=>{
     note.id = crypto.randomUUID();
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
-            //todo: real 404 error
-            res.send("404");
-            throw err;
+            return res.status(500).send("error reading database");
         }else{
             const notes = JSON.parse(data);
             notes.push(note);
@@ -53,9 +44,7 @@ server.delete("/api/notes/:id", (req,res)=>{
     const uuid = req.params.id;
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
-            //todo: real 404 error
-            res.send("404");
-            throw err;
+            return res.status(500).send("error reading database");
         }else{
             const notes = JSON.parse(data);
             const index = notes.findIndex(x=>x.id == uuid);
