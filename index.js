@@ -49,8 +49,8 @@ server.post("/api/notes", (req,res)=>{
     });
 });
 
-server.delete("/api/notes", (req,res)=>{
-    const uuid = req.body.id;
+server.delete("/api/notes/:id", (req,res)=>{
+    const uuid = req.params.id;
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
             //todo: real 404 error
