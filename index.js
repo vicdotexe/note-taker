@@ -18,10 +18,9 @@ server.get("/api/notes", (req,res)=>{
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
             return res.status(500).send("error reading database");
-        }else{
-            const notes = JSON.parse(data);
-            res.json(notes);
         }
+        const notes = JSON.parse(data);
+        res.json(notes);
     });
 })
 
@@ -31,28 +30,29 @@ server.post("/api/notes", (req,res)=>{
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
             return res.status(500).send("error reading database");
-        }else{
-            const notes = JSON.parse(data);
-            notes.push(note);
-            fs.writeFile("./db/db.json", JSON.stringify(notes),(err)=>{if (err){throw err;}});
-            res.json(notes);
         }
+        const notes = JSON.parse(data);
+        notes.push(note);
+        fs.writeFile("./db/db.json", JSON.stringify(notes),(err)=>{if (err){throw err;}});
+        res.json(notes);
     });
 });
 
 server.delete("/api/notes/:id", (req,res)=>{
     const uuid = req.params.id;
+
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
             return res.status(500).send("error reading database");
-        }else{
-            const notes = JSON.parse(data);
-            const index = notes.findIndex(x=>x.id == uuid);
-            if (index != -1){
-                notes.splice(index, 1);
-            }
+        }
+        const notes = JSON.parse(data);
+        const index = notes.findIndex(x=>x.id == uuid);
+        if (index != -1){
+            notes.splice(index, 1);
             fs.writeFile("./db/db.json", JSON.stringify(notes),(err)=>{if (err){throw err;}});
-            res.json(notes);
+            res.send(`Note ${uuid} deleted.`);
+        }else{
+            res.status(400).send(`Note ID '${uuid}' not found in database.`)
         }
     });
 })
