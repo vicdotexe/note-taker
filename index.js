@@ -10,10 +10,12 @@ server.use(express.json());
 server.use(express.urlencoded({extended:true}));
 server.use(express.static("public"));
 
+// send to the notes.html page
 server.get("/notes", (req,res)=>{
     res.sendFile(path.join(__dirname, "./public/notes.html"));
 })
 
+// send all back the stored notes
 server.get("/api/notes", (req,res)=>{
     fs.readFile("./db/db.json", "utf-8", (err,data)=>{
         if (err){
@@ -24,6 +26,7 @@ server.get("/api/notes", (req,res)=>{
     });
 })
 
+// push the new note to the database after assigning it a random id
 server.post("/api/notes", (req,res)=>{
     const note = req.body;
     note.id = crypto.randomUUID();
@@ -38,6 +41,7 @@ server.post("/api/notes", (req,res)=>{
     });
 });
 
+// remove a note, by it's id, from the database.
 server.delete("/api/notes/:id", (req,res)=>{
     const uuid = req.params.id;
 
@@ -57,8 +61,10 @@ server.delete("/api/notes/:id", (req,res)=>{
     });
 })
 
+// send client to index.html if they wander off
 server.get("*", (req,res)=>{
     res.sendFile(path.join(__dirname, "./public/index.html"));
 })
 
+// start listening
 server.listen(PORT, ()=>{console.log(`Listening on port ${PORT}`)});
